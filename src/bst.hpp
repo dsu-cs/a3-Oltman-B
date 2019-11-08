@@ -138,25 +138,34 @@ template<class T>
 }
 
 template<class T>
-Node<T>* BST<T>::insertHelper(T data, Node<T>* node)
+Node<T>* BST<T>::insertHelper(T new_data, Node<T>* node)
 {
     if(node == NULL)
     {
         Node<T>* tmp = new Node<T>;
-        tmp->set_data(data);
+        tmp->set_data(new_data);
         tmp->set_left(NULL);
         tmp->set_right(NULL);
 
+        node_count++;
+
         return tmp;
     }
-    else if(data < node->get_data())
+    // By checking if data is exclusively less than or greater than
+    // current node, duplicates will be skipped
+    else if(new_data < node->get_data())
     {
-        node->set_left(insertHelper(data, node->get_left()));
+        node->set_left(insertHelper(new_data, node->get_left()));
     }
-    else if(data > node->get_data())
+    else if(new_data > node->get_data())
     {
-        node->set_right(insertHelper(data, node->get_right()));
+        node->set_right(insertHelper(new_data, node->get_right()));
     }
+    else
+    {
+        std::cout << "Duplicate nodes are not allowed." << std::endl;
+    }
+    
 }
 
 template<class T>
@@ -185,5 +194,5 @@ void BST<T>::remove(T val)
 template<class T>
 int BST<T>::get_size()
 {
-
+    return node_count;
 }
