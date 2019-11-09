@@ -249,7 +249,6 @@ Node<T> *BST<T>::getParent(T val)
 template<class T>
 void BST<T>::remove(T val)
 {
-    Node<T>* temp;
     Node<T>* target = search(val);
     //Case 1, node doesn't exist in tree
     if(target == NULL)
