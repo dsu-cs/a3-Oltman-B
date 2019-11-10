@@ -48,6 +48,7 @@ private:
     // helper function for remove
     Node<T> *getParent(T val);
     // the root node of the tree
+public:
     Node<T> *root;
     // the number of nodes in the tree
     int node_count;
@@ -250,43 +251,62 @@ template<class T>
 void BST<T>::remove(T val)
 {
     Node<T>* target = search(val);
+    Node<T>* temp;
+
     //Case 1, node doesn't exist in tree
     if(target == NULL)
     {
         return;
     }
-    
     // if target found, get target's parent.
     Node<T>* targetParent = getParent(val);
     
     // Case 2, node is leaf
     if(target->get_left() == NULL && target->get_right() == NULL)
     {
-        // If target is left child, parent sets left node to null, else set right node to null.
-        targetParent->get_left() == target ? targetParent->set_left(NULL) : targetParent->set_right(NULL);
-
+        if(target != root)
+        {
+            // If target is left child, parent sets left node to null, else set right node to null.
+            targetParent->get_left() == target ? targetParent->set_left(NULL) : targetParent->set_right(NULL);
+        }
+        else
+        {
+            root = NULL;
+        }
+        
         delete(target);
-        target = NULL;
     } 
     // Case 3a, target has only left child.
     else if(target->get_left() != NULL && target->get_right() == NULL)
     {
-        // If target is left child, parent sets left node to left grandchild.
-        targetParent->get_left() == target ?
-            targetParent->set_left(target->get_left()) : targetParent->set_right(target->get_left());
-
+        if(target != root)
+        {
+            // If target is left child, parent sets left node to left grandchild.
+            targetParent->get_left() == target ?
+                targetParent->set_left(target->get_left()) : targetParent->set_right(target->get_left());
+        }
+        else
+        {
+            root = root->get_left();
+        }
+        
         delete(target);
-        target = NULL;
     }
     // Case 3b, target has only right child.
     else if(target->get_right() != NULL && target->get_left() == NULL)
     {
-        // If target is left child, parent sets left node to right grandchild.
-        targetParent->get_left() == target ?
-            targetParent->set_left(target->get_right()) : targetParent->set_right(target->get_right());
-
+        if(target != root)
+        {
+            // If target is left child, parent sets left node to right grandchild.
+            targetParent->get_left() == target ?
+                targetParent->set_left(target->get_right()) : targetParent->set_right(target->get_right());
+        }
+        else
+        {
+            root = root->get_right();
+        }
+        
         delete(target);
-        target = NULL;
     }
     // Case 4, target has two children.
     else if(target->get_left() != NULL && target->get_right() != NULL)
@@ -295,6 +315,7 @@ void BST<T>::remove(T val)
         Node<T>* itr = target->get_left();
         Node<T>* maxNode = itr;
         Node<T>* maxParent = maxNode;
+
         while(itr != NULL)
         {
             // maxNode will always be larger than previous because we are only iterating right child.
@@ -311,19 +332,18 @@ void BST<T>::remove(T val)
         // Can only have a maximum of one left child since this is the maximum node.
         if(maxNode->get_left() != NULL)
         {
-            maxParent->get_left() == maxNode ?
-                maxParent->set_left(maxNode->get_left()) : maxParent->set_right(maxNode->get_left());
-
+            if(maxNode != root)
+            {
+                maxParent->get_left() == maxNode ?
+                    maxParent->set_left(maxNode->get_left()) : maxParent->set_right(maxNode->get_left());
+            }
+            else
+            {
+                root = root->get_left();
+            }
+            
             delete(maxNode);
-            maxNode = NULL;
         }
-        else
-        {
-            // Handle case for no children.
-            maxParent->get_left() == maxNode ? maxParent->set_left(NULL) : maxParent->set_right(NULL);
-            delete(maxNode);
-            maxNode = NULL;
-        } 
     }
 }
 
