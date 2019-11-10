@@ -48,7 +48,6 @@ private:
     // helper function for remove
     Node<T> *getParent(T val);
     // the root node of the tree
-public:
     Node<T> *root;
     // the number of nodes in the tree
     int node_count;
@@ -79,7 +78,6 @@ void BST<T>::inorderHelper(std::vector<T>* vec, Node<T>* node)
     {
         return;
     }
-
     inorderHelper(vec, node->get_left());
     vec->push_back(node->get_data());
     inorderHelper(vec, node->get_right());
@@ -308,20 +306,17 @@ void BST<T>::remove(T val)
         
         delete(target);
     }
-    // Case 4, target has two children.
+    // Case 4, target has two children. TODO(baruch): Bug in case 4, not properly deleting root node when it has 2 children.
     else if(target->get_left() != NULL && target->get_right() != NULL)
     {
         // Find maximum of left subtree
-        Node<T>* itr = target->get_left();
-        Node<T>* maxNode = itr;
-        Node<T>* maxParent = maxNode;
-
-        while(itr != NULL)
+        Node<T>* maxParent = target;
+        Node<T>* maxNode = target->get_left();
+    
+        while(maxNode->get_right() != NULL)
         {
-            // maxNode will always be larger than previous because we are only iterating right child.
-            maxParent = maxNode; 
-            maxNode = itr;
-            itr = itr->get_right();            
+            maxParent = maxNode;
+            maxNode = maxNode->get_right();            
         }
 
         T tempData = maxNode->get_data();
@@ -344,9 +339,17 @@ void BST<T>::remove(T val)
             
             delete(maxNode);
         }
+        else if(maxNode->get_left() == NULL && maxNode->get_right() == NULL)
+        {
+            // Handle case for no children.
+            maxParent->get_left() == maxNode ?
+                maxParent->set_left(NULL) : maxParent->set_right(NULL);
+
+            delete(maxNode);         
+
+        }
     }
 }
-
 
 
 template<class T>
