@@ -141,6 +141,7 @@ template<class T>
 template<class T>
 Node<T>* BST<T>::insertHelper(T new_data, Node<T>* node)
 {
+    // Base case, node is null, create new node and return its address.
     if(node == NULL)
     {
         Node<T>* tmp = new Node<T>;
@@ -245,6 +246,7 @@ Node<T> *BST<T>::getParent(T val)
     return NULL;
 }
 
+// Remove could be implemented with more recursion, similar to insertion.
 template<class T>
 void BST<T>::remove(T val)
 {
@@ -257,6 +259,8 @@ void BST<T>::remove(T val)
         return;
     }
     // if target found, get target's parent.
+    // getParent could be implemented in a modified version of the search function to prevent
+    // having to walk the tree multiple times (once for getParent and once for search.)
     Node<T>* targetParent = getParent(val);
     
     // Case 2, node is leaf
@@ -272,6 +276,7 @@ void BST<T>::remove(T val)
             root = NULL;
         }
         
+        node_count--;
         delete(target);
     } 
     // Case 3a, target has only left child.
@@ -279,6 +284,7 @@ void BST<T>::remove(T val)
     {
         if(target != root)
         {
+            // Need to keep track of which child matches the target so parent can update properly.
             // If target is left child, parent sets left node to left grandchild.
             targetParent->get_left() == target ?
                 targetParent->set_left(target->get_left()) : targetParent->set_right(target->get_left());
@@ -288,6 +294,7 @@ void BST<T>::remove(T val)
             root = root->get_left();
         }
         
+        node_count--;
         delete(target);
     }
     // Case 3b, target has only right child.
@@ -304,9 +311,10 @@ void BST<T>::remove(T val)
             root = root->get_right();
         }
         
+        node_count--;
         delete(target);
     }
-    // Case 4, target has two children. TODO(baruch): Bug in case 4, not properly deleting root node when it has 2 children.
+    // Case 4, target has two children.
     else if(target->get_left() != NULL && target->get_right() != NULL)
     {
         // Find maximum of left subtree
@@ -315,6 +323,8 @@ void BST<T>::remove(T val)
     
         while(maxNode->get_right() != NULL)
         {
+            // Set parent to maxNode before updating maxNode, this way parent will always be
+            // available for fixing-up pointers.
             maxParent = maxNode;
             maxNode = maxNode->get_right();            
         }
@@ -337,20 +347,21 @@ void BST<T>::remove(T val)
                 root = root->get_left();
             }
             
+            node_count--;
             delete(maxNode);
         }
         else if(maxNode->get_left() == NULL && maxNode->get_right() == NULL)
         {
-            // Handle case for no children.
-            maxParent->get_left() == maxNode ?
-                maxParent->set_left(NULL) : maxParent->set_right(NULL);
-
+                // Handle case for no children. No need to check if maxNode == root because that case is
+                // handled above.
+                maxParent->get_left() == maxNode ?
+                    maxParent->set_left(NULL) : maxParent->set_right(NULL);
+            
+            node_count--;
             delete(maxNode);         
-
         }
     }
 }
-
 
 template<class T>
 int BST<T>::get_size()
